@@ -1,20 +1,30 @@
-import { Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { UserService } from './users.service';
 
 @Controller('users')
 export class UsersController {
   @Get()
-  getUsers(@Query() query: any) {
+  getUsers(
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ) {
     const userService = new UserService();
-    console.log(query);
+    console.log(limit);
     return userService.getAllUsers();
   }
 
   @Get(':id')
-  gutUserById(@Param('id') id: any) {
+  gutUserById(@Param('id', ParseIntPipe) id: number) {
     console.log(id);
     const userService = new UserService();
-    return userService.getUserById(+id);
+    return userService.getUserById(id);
   }
 
   @Post()
