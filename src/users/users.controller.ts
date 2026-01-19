@@ -9,18 +9,14 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { UserService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { GetUserParamDto } from './dtos/get-user-param.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { UserService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  userService: UserService;
-
-  constructor() {
-    this.userService = new UserService();
-  }
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   getUsers(
