@@ -1,58 +1,34 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AuthService } from '../auth/auth.service';
-
+import { Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserDto } from './dtos/create-user.dto';
 @Injectable()
 export class UserService {
   constructor(
-    @Inject(forwardRef(() => AuthService))
-    private readonly authService: AuthService,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
-  users: {
-    id: number;
-    name: string;
-    age: number;
-    gender: string;
-    isMarried: boolean;
-    password: string;
-  }[] = [
-    {
-      id: 1,
-      name: 'john',
-      age: 28,
-      gender: 'male',
-      isMarried: true,
-      password: 'abhishek',
-    },
-    {
-      id: 2,
-      name: 'abhi',
-      age: 22,
-      gender: 'male',
-      isMarried: false,
-      password: 'abhishek',
-    },
-  ];
 
   getAllUsers() {
-    if (this.authService.isAuthenticated) {
-      return this.users;
+    return this.userRepository.find();
+  }
+
+  getUserById() {}
+
+  public async createUser(userDto: CreateUserDto) {
+    //Validate if a user exist with the given email
+    const user = await this.userRepository.findOne({
+      where: { email: userDto.email },
+    });
+
+    //Handle the error / exeception
+    if (user) {
+      return 'this user with the given eamil already exist';
     }
-    return 'you are not logined in';
-  }
-
-  getUserById(id: number) {
-    return this.users.find((x) => x.id === id);
-  }
-
-  createUser(user: {
-    id: number;
-    name: string;
-    age: number;
-    gender: string;
-    isMarried: boolean;
-    password: string;
-  }) {
-    this.users.push(user);
-    console.log(this.users);
+    //Create that user
+    let newUser = this.userRepository.create(userDto);
+    newUser = await this.userRepository.save(newUser);
+    return newUser;
   }
 }
