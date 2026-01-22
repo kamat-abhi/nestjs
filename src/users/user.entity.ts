@@ -3,9 +3,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Profile } from '../profile/profile.entity';
+import { JoinColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -15,7 +18,7 @@ export class User {
   @Column({
     type: 'varchar',
     nullable: false,
-    length: 15,
+    length: 50,
     unique: true,
   })
   userName: string;
@@ -23,7 +26,7 @@ export class User {
   @Column({
     type: 'varchar',
     nullable: false,
-    length: 20,
+    length: 50,
     unique: true,
   })
   email: string;
@@ -34,6 +37,10 @@ export class User {
     length: 20,
   })
   password: string;
+
+  @OneToOne(() => Profile)
+  @JoinColumn()
+  profile?: Profile;
 
   @CreateDateColumn()
   createdAt: Date;
