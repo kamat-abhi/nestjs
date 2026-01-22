@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,7 +11,7 @@ export class UserService {
     private userRepository: Repository<User>,
 
     @InjectRepository(User)
-    private ProfileRepository: Repository<Profile>,
+    private profileRepository: Repository<Profile>,
   ) {}
 
   getAllUsers() {
@@ -21,20 +21,26 @@ export class UserService {
   getUserById() {}
 
   public async createUser(userDto: CreateUserDto) {
-    let profile: Profile | undefined;
+    //let profile: Profile | undefined;
+    userDto.profile = userDto.profile ?? {};
 
-    if (userDto.profile) {
-      profile = this.ProfileRepository.create(userDto.profile);
-      await this.ProfileRepository.save(profile);
-    }
-
-    const user = this.userRepository.create({
-      email: userDto.email,
-      userName: userDto.userName,
-      password: userDto.password,
-      profile: profile,
-    });
+    const user = this.userRepository.create(userDto);
 
     return this.userRepository.save(user);
+  }
+
+  public async deleteUser(id: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Please provide a valid user id');
+    }
+    await this.userRepository.delete(id);
+    await this.profileRepository.delete(user.profile.id);
+    return 'user has been deleted ';
   }
 }

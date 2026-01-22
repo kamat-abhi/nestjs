@@ -23,5 +23,5 @@ export class CreateUserDto {
   password: string;
 
   @IsOptional()
-  profile: CreateProfileDto | null;
+  profile: CreateProfileDto;
 }
