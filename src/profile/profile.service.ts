@@ -17,4 +17,9 @@ export class ProfileService {
       },
     });
   }
+
+  public async deleteUser(id: number) {
+    await this.profileRepository.delete(id);
+    return 'Profile has been deleted ';
+  }
 }

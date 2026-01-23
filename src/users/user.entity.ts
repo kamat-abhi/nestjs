@@ -8,8 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Profile } from '../profile/profile.entity';
-import { JoinColumn } from 'typeorm';
-
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -41,7 +39,6 @@ export class User {
   @OneToOne(() => Profile, (profile) => profile.user, {
     cascade: true,
   })
-  @JoinColumn()
   profile: Profile;
 
   @CreateDateColumn()
