@@ -24,4 +24,13 @@ export class TweetService {
       return await this.tweetRepository.save(tweet);
     }
   }
+
+  public async getTweets(userId: number) {
+    return await this.tweetRepository.find({
+      where: {
+        user: { id: userId },
+      },
+      relations: { user: true },
+    });
+  }
 }
