@@ -18,7 +18,9 @@ export class UserService {
     });
   }
 
-  getUserById() {}
+  public async getUserById(id: number) {
+    return await this.userRepository.findOneBy({ id });
+  }
 
   public async createUser(userDto: CreateUserDto) {
     //let profile: Profile | undefined;
