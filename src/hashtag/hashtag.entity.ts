@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Tweet } from '../tweet/tweet.entity';
 
 @Entity()
 export class HashTag {
@@ -11,4 +18,10 @@ export class HashTag {
     unique: true,
   })
   name: string;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
+
+  @ManyToMany(() => Tweet, (tweet) => tweet.hashtags, { onDelete: 'CASCADE' })
+  tweets: Tweet[];
 }

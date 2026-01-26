@@ -36,7 +36,7 @@ export class Tweet {
   @ManyToOne(() => User, (user) => user.tweets)
   user: User;
 
-  @ManyToMany(() => HashTag)
+  @ManyToMany(() => HashTag, (hashtag) => hashtag.tweets)
   @JoinTable()
   hashtags: HashTag[];
 }
