@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -28,5 +29,10 @@ export class TweetController {
   @Patch()
   public UpdateTweet(@Body() tweet: UpdateTweetDto) {
     return this.tweetService.updateTweet(tweet);
+  }
+
+  @Delete(':id')
+  public async DeleteTweet(@Param('id', ParseIntPipe) id: number) {
+    return await this.tweetService.deleteTweet(id);
   }
 }
