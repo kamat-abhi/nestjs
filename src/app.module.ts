@@ -7,23 +7,33 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProfileModule } from './profile/profile.module';
 import { HashtagModule } from './hashtag/hashtag.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { appConfig } from './config/app.config';
+
+const ENV = process.env.NODE_ENV;
 
 @Module({
   imports: [
     UserModule,
     TweetModule,
     AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: !ENV ? '.env' : `.env.${ENV.trim()}`,
+      load: [appConfig],
+    }),
     TypeOrmModule.forRootAsync({
-      useFactory: () => ({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        //entities: [User],
-        autoLoadEntities: true,
-        synchronize: true,
-        host: 'localhost',
-        port: 5432,
-        username: 'postgres',
-        password: 'password',
-        database: 'nestjs',
+        autoLoadEntities: configService.get('database.autoLoadEntities'),
+        synchronize: configService.get('database.syncronize'),
+        host: configService.get('database.host'),
+        port: configService.get('database.port'),
+        username: configService.get('database.userName'),
+        password: configService.get('database.password'),
+        database: configService.get('database.name'),
       }),
     }),
     ProfileModule,
