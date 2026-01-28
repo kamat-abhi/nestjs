@@ -23,6 +23,12 @@ export class UsersController {
   getAllUser() {
     return this.userService.getAllUsers();
   }
+
+  @Get(':id')
+  getAllUserById(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.getUserById(id);
+  }
+
   @Delete(':id')
   deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.userService.deleteUser(id);
