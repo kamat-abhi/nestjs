@@ -10,6 +10,7 @@ import { HashtagModule } from './hashtag/hashtag.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from './config/database.config';
 import appConfig from './config/app.config';
+import envValidation from './config/env.validation';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import appConfig from './config/app.config';
         ? `.env.${process.env.NODE_ENV.trim()}`
         : '.env',
       load: [appConfig, databaseConfig],
+      validationSchema: envValidation,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
