@@ -6,9 +6,11 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserService } from './users.service';
+import { PaginationQueryDto } from '../common/pagination/dto/pagination-query.dto';
 
 @Controller('users')
 export class UsersController {
@@ -20,8 +22,8 @@ export class UsersController {
   }
 
   @Get()
-  getAllUser() {
-    return this.userService.getAllUsers();
+  getAllUser(@Query() paginationDto: PaginationQueryDto) {
+    return this.userService.getAllUsers(paginationDto);
   }
 
   @Get(':id')

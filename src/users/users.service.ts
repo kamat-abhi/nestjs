@@ -9,21 +9,25 @@ import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserAlreadyExistException } from '../CustomExceptions/user-already-exist.exception';
+import { PaginationProvider } from '../common/pagination/pagination.provider';
+import { PaginationQueryDto } from '../common/pagination/dto/pagination-query.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private readonly paginationProvider: PaginationProvider,
   ) {}
 
-  public async getAllUsers() {
+  public async getAllUsers(paginationDto: PaginationQueryDto) {
     try {
-      return await this.userRepository.find({
-        relations: {
-          profile: true,
-        },
-      });
+      return await this.paginationProvider.paginateQuery(
+        paginationDto,
+        this.userRepository,
+        undefined,
+        { profile: true },
+      );
     } catch (error) {
       if (
         error instanceof Error &&
