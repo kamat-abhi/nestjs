@@ -7,10 +7,10 @@ export interface Paginated<T> {
     totalPages: number;
   };
   links: {
-    first: number;
-    last: string;
-    current: string;
-    next: string;
-    previous: string;
+    firstPage: string;
+    lastPage: string;
+    currentPage: string;
+    nextPage: string;
+    prevPage: string;
   };
 }
