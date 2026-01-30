@@ -25,8 +25,10 @@ export class UserService {
       return await this.paginationProvider.paginateQuery(
         paginationDto,
         this.userRepository,
-        undefined,
-        { profile: true },
+        {
+          relations: { profile: true },
+          order: { createdAt: 'DESC' },
+        },
       );
     } catch (error) {
       if (

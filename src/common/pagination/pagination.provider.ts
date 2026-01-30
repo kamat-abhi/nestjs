@@ -12,6 +12,12 @@ import type { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
 import type { Paginated } from './pagination.interface';
 
+type PaginationOptions<T extends ObjectLiteral> = {
+  where?: FindOptionsWhere<T>;
+  relations?: FindOptionsRelations<T>;
+  order?: FindOptionsOrder<T>;
+};
+
 @Injectable()
 export class PaginationProvider {
   constructor(@Inject(REQUEST) private readonly request: Request) {}
@@ -19,48 +25,47 @@ export class PaginationProvider {
   public async paginateQuery<T extends ObjectLiteral>(
     paginationQueryDto: PaginationQueryDto,
     repository: Repository<T>,
-    where?: FindOptionsWhere<T>,
-    relations?: FindOptionsRelations<T>,
-    order?: FindOptionsOrder<T>,
+    options?: PaginationOptions<T>,
   ): Promise<Paginated<T>> {
+    const { page, limit } = paginationQueryDto;
+
     const findOptions: FindManyOptions<T> = {
-      skip: (paginationQueryDto.page - 1) * paginationQueryDto.limit,
-      take: paginationQueryDto.limit,
+      where: options?.where,
+      relations: options?.relations,
+      order: options?.order,
+      take: limit,
+      skip: (page - 1) * limit,
     };
-    if (where) {
-      findOptions.where = where;
-    }
-    if (relations) {
-      findOptions.relations = relations;
-    }
-    if (order) {
-      findOptions.order = order;
-    }
     const result = await repository.find(findOptions);
     const totalItems = await repository.count();
-    const totalPages = Math.ceil(totalItems / paginationQueryDto.limit);
-    const currentPage = paginationQueryDto.page;
+    const totalPages = Math.ceil(totalItems / limit);
+    const currentPage = page;
     const nextPage = currentPage === totalPages ? currentPage : currentPage + 1;
     const prevPage = currentPage === 1 ? currentPage : currentPage - 1;
-    const baseUrl =
-      this.request.protocol + '://' + this.request.headers.host + '/';
-    const newUrl = new URL(this.request.url, baseUrl);
-    const response: Paginated<T> = {
+    const baseUrl = this.request.protocol + '://' + this.request.headers.host;
+    const url = new URL(this.request.originalUrl, baseUrl);
+
+    const buildLink = (page: number) => {
+      url.searchParams.set('page', page.toString());
+      url.searchParams.set('limit', limit.toString());
+      return url.toString();
+    };
+
+    return {
       data: result,
       meta: {
-        itemPerPage: paginationQueryDto.limit,
+        itemPerPage: limit,
         totalItems,
         currentPage,
         totalPages,
       },
       links: {
-        firstPage: `${newUrl.origin}${newUrl.pathname}?limit=${paginationQueryDto.limit}&page=1`,
-        lastPage: `${newUrl.origin}${newUrl.pathname}?limit=${paginationQueryDto.limit}&page=${totalPages}`,
-        currentPage: `${newUrl.origin}${newUrl.pathname}?limit=${paginationQueryDto.limit}&page=${currentPage}`,
-        nextPage: `${newUrl.origin}${newUrl.pathname}?limit=${paginationQueryDto.limit}&page=${nextPage}`,
-        prevPage: `${newUrl.origin}${newUrl.pathname}?limit=${paginationQueryDto.limit}&page=${prevPage}`,
+        firstPage: buildLink(1),
+        lastPage: buildLink(totalPages),
+        currentPage: buildLink(currentPage),
+        nextPage: buildLink(nextPage),
+        prevPage: buildLink(prevPage),
       },
     };
-    return response;
   }
 }

@@ -46,7 +46,11 @@ export class TweetService {
     return await this.paginationProvider.paginateQuery(
       paginationDto,
       this.tweetRepository,
-      { user: { id: userId } },
+      {
+        where: {
+          user: { id: userId },
+        },
+      },
     );
   }
 
