@@ -34,7 +34,7 @@ export class User {
   @Column({
     type: 'varchar',
     nullable: false,
-    length: 20,
+    length: 200,
   })
   password: string;
 

@@ -1,14 +1,19 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UserService } from './users.service';
 import { User } from './user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Profile } from '../profile/profile.entity';
 import { PaginationModule } from '../common/pagination/pagination.module';
+import { AuthModule } from '../auth/auth.module';
 @Module({
   controllers: [UsersController],
   providers: [UserService],
   exports: [UserService],
-  imports: [PaginationModule, TypeOrmModule.forFeature([User, Profile])],
+  imports: [
+    PaginationModule,
+    TypeOrmModule.forFeature([User, Profile]),
+    forwardRef(() => AuthModule),
+  ],
 })
 export class UserModule {}

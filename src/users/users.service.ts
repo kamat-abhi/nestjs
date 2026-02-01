@@ -1,8 +1,11 @@
 import {
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   RequestTimeoutException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -11,6 +14,7 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { UserAlreadyExistException } from '../CustomExceptions/user-already-exist.exception';
 import { PaginationProvider } from '../common/pagination/pagination.provider';
 import { PaginationQueryDto } from '../common/pagination/dto/pagination-query.dto';
+import { HashingProvider } from '../auth/provider/hashing.provider';
 
 @Injectable()
 export class UserService {
@@ -18,6 +22,8 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly paginationProvider: PaginationProvider,
+    @Inject(forwardRef(() => HashingProvider))
+    private readonly hashingProvider: HashingProvider,
   ) {}
 
   public async getAllUsers(paginationDto: PaginationQueryDto) {
@@ -77,7 +83,10 @@ export class UserService {
       }
 
       userDto.profile = userDto.profile ?? {};
-      const user = this.userRepository.create(userDto);
+      const user = this.userRepository.create({
+        ...userDto,
+        password: await this.hashingProvider.hashPassword(userDto.password),
+      });
       return this.userRepository.save(user);
     } catch (error) {
       if (
@@ -97,5 +106,22 @@ export class UserService {
   public async deleteUser(id: number) {
     await this.userRepository.delete(id);
     return 'user has been deleted ';
+  }
+
+  public async findUserByUserName(userName: string) {
+    let user: User | null = null;
+
+    try {
+      user = await this.userRepository.findOneBy({ userName });
+    } catch (error) {
+      throw new RequestTimeoutException(error, {
+        description: `User with given ${userName} is not found`,
+      });
+    }
+    if (!user) {
+      throw new UnauthorizedException('User does not exist');
+    }
+
+    return user;
   }
 }
