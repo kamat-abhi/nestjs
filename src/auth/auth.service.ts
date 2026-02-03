@@ -8,13 +8,20 @@ import { UserService } from '../users/users.service';
 import { CreateUserDto } from '../users/dtos/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { HashingProvider } from './provider/hashing.provider';
+import authConfig from './config/auth.config';
+import type { ConfigType } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
+
+    @Inject(authConfig.KEY)
+    private readonly authConfiguration: ConfigType<typeof authConfig>,
     private readonly hashingProvider: HashingProvider,
+    private readonly jwtService: JwtService,
   ) {}
 
   public async signup(createUserDto: CreateUserDto) {
@@ -33,8 +40,21 @@ export class AuthService {
       throw new UnauthorizedException('Incorrect Password');
     }
 
+    const token = await this.jwtService.signAsync(
+      {
+        sub: user.id,
+        email: user.email,
+      },
+      {
+        secret: this.authConfiguration.secret,
+        expiresIn: this.authConfiguration.expireIn,
+        audience: this.authConfiguration.audience,
+        issuer: this.authConfiguration.issuer,
+      },
+    );
+
     return {
-      data: user,
+      token: token,
       success: true,
       message: 'user logedin successfully',
     };
