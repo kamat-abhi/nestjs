@@ -1,98 +1,109 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# Intro — NestJS Example Project
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This repository is a small NestJS example application demonstrating typical features of a REST API: authentication, users, profiles, tweets, hashtags, and pagination.
 
-## Description
+## Key Features
+- Authentication (login) flow
+- User management (create, update, fetch)
+- Profile management
+- Tweet CRUD with query parameters and pagination
+- Hashtag management
+- Centralized configuration and environment validation
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Project Structure (src)
+- `auth/` — auth controller, service, providers, DTOs
+- `users/` — user entity, controller, service, DTOs
+- `profile/` — profile entity, controller, service
+- `tweet/` — tweet entity, controller, service, DTOs
+- `hashtag/` — hashtag entity and controller
+- `common/pagination/` — pagination DTO, provider, and module
+- `config/` — app and database configuration, env validation
+- `CustomExceptions/` — application-specific exceptions
 
-## Project setup
+## Prerequisites
+- Node.js (16+ recommended)
+- npm or yarn
+- A running database (configured via environment variables)
 
-```bash
-$ npm install
-```
-
-## Compile and run the project
+## Quick Start
+1. Install dependencies
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
+# or
+yarn
 ```
 
-## Run tests
+2. Provide environment variables (see `src/config` for expected keys).
+
+Common environment variables to set (example names — check `src/config`):
+
+- `APP_PORT` — port the app listens on
+- `DATABASE_URL` or DB connection details
+- `JWT_SECRET` — JWT secret for auth
+- Any other variables validated in `src/config/env.validation.ts`
+
+3. Run the app in development
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run start:dev
+# or
+yarn start:dev
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+4. Build and run for production
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run build
+npm run start:prod
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Scripts
+This project uses standard NestJS scripts. Common scripts you can expect in `package.json`:
 
-## Resources
+- `start` — run production build
+- `start:dev` — run in watch/development mode
+- `build` — TypeScript build
+- `test` — run unit tests
+- `test:e2e` — run end-to-end tests
 
-Check out a few resources that may come in handy when working with NestJS:
+## API Endpoints (overview)
+- `POST /auth/login` — authenticate and get token
+- `POST /users` — create a user
+- `GET /users/:id` — get user by id
+- `PUT /users/:id` — update user
+- `GET /tweets` — list tweets (supports pagination/query)
+- `POST /tweets` — create a tweet
+- `GET /hashtags` — list hashtags
+- `GET /profiles/:id` — profile operations
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Refer to the controller files in `src/` for exact routes and request/response shapes.
 
-## Support
+## Testing
+- Run unit tests:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+npm run test
+```
 
-## Stay in touch
+- Run e2e tests:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+npm run test:e2e
+```
 
-## License
+## Contributing
+- Open an issue or a PR with clear description and tests for changes.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Troubleshooting
+- If the app fails to start, check environment variables and database connectivity.
+- Use logs printed to console for debugging and consult controller/service files for request handling.
+
+---
+
+If you'd like, I can:
+- add example `.env` (template) with the required variables,
+- generate API docs (Swagger) setup, or
+- add README examples for common API requests (curl/Postman).
+
