@@ -5,21 +5,22 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { CreateUserDto } from './dtos/create-user.dto';
 import { UserService } from './users.service';
 import { PaginationQueryDto } from '../common/pagination/dto/pagination-query.dto';
+import { AuthorizeGuard } from '../auth/guards/authorize.guards';
 
 @Controller('users')
+@UseGuards(AuthorizeGuard)
 export class UsersController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  createUser(@Body() user: CreateUserDto) {
-    return this.userService.createUser(user);
-  }
+  // @Post()
+  // createUser(@Body() user: CreateUserDto) {
+  //   return this.userService.createUser(user);
+  // }
 
   @Get()
   getAllUser(@Query() paginationDto: PaginationQueryDto) {
