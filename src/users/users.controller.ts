@@ -6,14 +6,12 @@ import {
   Param,
   ParseIntPipe,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { PaginationQueryDto } from '../common/pagination/dto/pagination-query.dto';
-import { AuthorizeGuard } from '../auth/guards/authorize.guards';
 
 @Controller('users')
-@UseGuards(AuthorizeGuard)
+//@UseGuards(AuthorizeGuard)
 export class UsersController {
   constructor(private readonly userService: UserService) {}
 
